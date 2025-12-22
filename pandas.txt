@@ -1,0 +1,93 @@
+import pandas as pd
+
+# 1757. Recyclable and Low Fat Products
+data = [['0', 'Y', 'N'], ['1', 'Y', 'Y'], ['2', 'N', 'Y'], ['3', 'Y', 'Y'], ['4', 'N', 'N']]
+products = pd.DataFrame(data, columns=['product_id', 'low_fats', 'recyclable']).astype({'product_id':'int64', 'low_fats':'category', 'recyclable':'category'})
+
+def find_products(products: pd.DataFrame) -> pd.DataFrame:
+    # Filter for products that are both low fat and recyclable
+    fc = (products['low_fats'] == 'Y') & (products['recyclable'] == 'Y')
+    return products[fc][['product_id']]
+
+# 584. Find Customer Referee
+data = [[1, 'Will', None], [2, 'Jane', None], [3, 'Alex', 2], [4, 'Bill', None], [5, 'Zack', 1], [6, 'Mark', 2]]
+customer = pd.DataFrame(data, columns=['id', 'name', 'referee_id']).astype({'id':'Int64', 'name':'object', 'referee_id':'Int64'})
+
+def find_customer_referee(customer: pd.DataFrame) -> pd.DataFrame:
+    # Select customers not referred by ID 2, including those with no referee (null)
+    fc = (customer['referee_id'] != 2) | (customer['referee_id'].isnull())
+    return customer[fc][['name']]
+
+# 595. Big Countriesdata = [['Afghanistan', 'Asia', 652230, 25500100, 20343000000], ['Albania', 'Europe', 28748, 2831741, 12960000000], ['Algeria', 'Africa', 2381741, 37100000, 188681000000], ['Andorra', 'Europe', 468, 78115, 3712000000], ['Angola', 'Africa', 1246700, 20609294, 100990000000]]
+world = pd.DataFrame(data, columns=['name', 'continent', 'area', 'population', 'gdp']).astype({'name':'object', 'continent':'object', 'area':'Int64', 'population':'Int64', 'gdp':'Int64'})
+
+def big_countries(world: pd.DataFrame) -> pd.DataFrame:
+    # Filter countries based on area (>= 3M) or population (>= 25M) thresholds
+    fc = (world['area'] >= 3000000) | (world['population'] >= 25000000)
+    return world[fc][['name','population','area']]
+
+# 1148. Article Views I
+data = [[1, 3, 5, '2019-08-01'], [1, 3, 6, '2019-08-02'], [2, 7, 7, '2019-08-01'], [2, 7, 6, '2019-08-02'], [4, 7, 1, '2019-07-22'], [3, 4, 4, '2019-07-21'], [3, 4, 4, '2019-07-21']]
+views = pd.DataFrame(data, columns=['article_id', 'author_id', 'viewer_id', 'view_date']).astype({'article_id':'Int64', 'author_id':'Int64', 'viewer_id':'Int64', 'view_date':'datetime64[ns]'})
+
+def article_views(views: pd.DataFrame) -> pd.DataFrame:
+    # Find authors who viewed their own articles, remove duplicates, and sort by ID
+    fc = views['author_id'] == views['viewer_id']
+    return views[fc][['author_id']].drop_duplicates().sort_values(by = 'author_id').rename(columns = {'author_id': 'id'})
+
+# 1683. Invalid Tweets
+data = [[1, 'Let us Code'], [2, 'More than fifteen chars are here!']]
+tweets = pd.DataFrame(data, columns=['tweet_id', 'content']).astype({'tweet_id':'Int64', 'content':'object'})
+
+def invalid_tweets(tweets: pd.DataFrame) -> pd.DataFrame:
+    # Identify tweets where the content length is strictly greater than 15 characters
+    fc = tweets['content'].str.len() > 15    return tweets[fc][['tweet_id']]
+
+# 1378. Replace Employee ID With The Unique Identifier
+data = [[1, 'Alice'], [7, 'Bob'], [11, 'Meir'], [90, 'Winston'], [3, 'Jonathan']]
+employees = pd.DataFrame(data, columns=['id', 'name']).astype({'id':'int64', 'name':'object'})
+data = [[3, 1], [11, 2], [90, 3]]
+employee_uni = pd.DataFrame(data, columns=['id', 'unique_id']).astype({'id':'int64', 'unique_id':'int64'})
+
+def replace_employee_id(employees: pd.DataFrame, employee_uni: pd.DataFrame) -> pd.DataFrame:
+    # Use left join to map unique IDs to employees; non-matching IDs will result in null
+    df_mer = pd.merge(left = employees , right = employee_uni, on = 'id', how = 'left')
+    return df_mer[['unique_id', 'name']]
+
+# 1068. Product Sales Analysis I
+data = [[1, 100, 2008, 10, 5000], [2, 100, 2009, 12, 5000], [7, 200, 2011, 15, 9000]]
+sales = pd.DataFrame(data, columns=['sale_id', 'product_id', 'year', 'quantity', 'price']).astype({'sale_id':'Int64', 'product_id':'Int64', 'year':'Int64', 'quantity':'Int64', 'price':'Int64'})
+data = [[100, 'Nokia'], [200, 'Apple'], [300, 'Samsung']]
+product = pd.DataFrame(data, columns=['product_id', 'product_name']).astype({'product_id':'Int64', 'product_name':'object'})
+
+def sales_analysis(sales: pd.DataFrame, product: pd.DataFrame) -> pd.DataFrame:
+    # Perform inner join to retrieve the product name for every sale record
+    df_merge = pd.merge(left = sales, right= product, on = 'product_id', how= 'inner')
+    return df_merge[['product_name', 'year', 'price']]
+
+# 1581. Customer Who Visited but Did Not Make Any Transactions
+data = [[1, 23], [2, 9], [4, 30], [5, 54], [6, 96], [7, 54], [8, 54]]
+visits = pd.DataFrame(data, columns=['visit_id', 'customer_id']).astype({'visit_id':'Int64', 'customer_id':'Int64'})
+data = [[2, 5, 310], [3, 5, 300], [9, 5, 200], [12, 1, 910], [13, 2, 970]]
+transactions = pd.DataFrame(data, columns=['transaction_id', 'visit_id', 'amount']).astype({'transaction_id':'Int64', 'visit_id':'Int64', 'amount':'Int64'})
+
+def find_customers(visits: pd.DataFrame, transactions: pd.DataFrame) -> pd.DataFrame:
+    # Identify visits without transactions via left join and count them per customer
+    df_merg = pd.merge(left = visits, right = transactions, on = 'visit_id', how = 'left')
+    f = df_merg['transaction_id'].isnull()
+    return df_merg[f].groupby('customer_id').agg({'visit_id':'count'}).reset_index().rename(columns = {'visit_id':'count_no_trans'})
+
+# 197. Rising Temperature
+data = [[1, '2015-01-01', 10], [2, '2015-01-02', 25], [3, '2015-01-03', 20], [4, '2015-01-04', 30]]
+weather = pd.DataFrame(data, columns=['id', 'recordDate', 'temperature']).astype({'id':'Int64', 'recordDate':'datetime64[ns]', 'temperature':'Int64'})
+
+def rising_temperature(weather: pd.DataFrame) -> pd.DataFrame:
+    # Sort by date and shift values to compare current record with the previous day
+    weather.sort_values(by = 'recordDate', inplace = True)
+    weather['prev_temp'] = weather['temperature'].shift(1)
+    weather['new_record'] = weather['recordDate'].shift(1)
+    
+    # Calculate date difference and filter for temperature increases on consecutive days
+    weather['diff'] = (weather['recordDate'] - weather['new_record']).dt.days
+    f = (weather['temperature'] > weather['prev_temp']) & (weather['diff'] == 1)
+    return weather[f][['id']]
