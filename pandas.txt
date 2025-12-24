@@ -91,3 +91,28 @@ def rising_temperature(weather: pd.DataFrame) -> pd.DataFrame:
     weather['diff'] = (weather['recordDate'] - weather['new_record']).dt.days
     f = (weather['temperature'] > weather['prev_temp']) & (weather['diff'] == 1)
     return weather[f][['id']]
+
+
+# 1667. Fix Names in a Table
+
+data = [[1, 'aLice'], [2, 'bOB']]
+users = pd.DataFrame(data, columns=['user_id', 'name']).astype({'user_id':'Int64', 'name':'object'})
+
+import pandas as pd
+
+def fix_names(users: pd.DataFrame) -> pd.DataFrame:
+    users['name'] = users['name'].apply(lambda x: x.capitalize())
+    return users[['user_id', 'name']].sort_values(by = 'user_id')
+
+
+# 1517. Find Users With Valid E-Mails
+data = [[1, 'Winston', 'winston@leetcode.com'], [2, 'Jonathan', 'jonathanisgreat'], [3, 'Annabelle', 'bella-@leetcode.com'], [4, 'Sally', 'sally.come@leetcode.com'], [5, 'Marwan', 'quarz#2020@leetcode.com'], [6, 'David', 'david69@gmail.com'], [7, 'Shapiro', '.shapo@leetcode.com']]
+users = pd.DataFrame(data, columns=['user_id', 'name', 'mail']).astype({'user_id':'int64', 'name':'object', 'mail':'object'})
+
+import pandas as pd
+import re
+
+def valid_emails(users: pd.DataFrame) -> pd.DataFrame:
+    return users[users['mail'].str.match('^[a-zA-Z][a-zA-Z0-9._-]*@leetcode[.]com$')]
+
+    
