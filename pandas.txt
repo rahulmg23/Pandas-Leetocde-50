@@ -189,3 +189,20 @@ import pandas as pd
 
 def rearrange_products_table(products: pd.DataFrame) -> pd.DataFrame:
     return products.melt(id_vars = 'product_id', var_name = 'store', value_name = "price").dropna()
+
+
+1741. Find Total Time Spent by Each Employee
+
+import pandas as pd
+
+def total_time(employees: pd.DataFrame) -> pd.DataFrame:
+    employees['total_time'] = employees['out_time'] - employees['in_time']
+    return employees.groupby(['event_day','emp_id'])['total_time'].sum().reset_index().rename(columns = {'event_day':'day'})
+
+511. Game Play Analysis I
+
+import pandas as pd
+
+def game_analysis(activity: pd.DataFrame) -> pd.DataFrame:
+    return (
+    activity.sort_values('event_date').drop_duplicates(subset = 'player_id'))[['player_id', 'event_date']].rename(columns = {'event_date':'first_login'})
